@@ -1,6 +1,7 @@
 pragma solidity ^0.4.23;
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
 /**
@@ -9,12 +10,12 @@ import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
  * Note they can later distribute these tokens as they wish using `transfer` and other
  * `StandardToken` functions.
  */
-contract SimpleToken is StandardToken, BurnableToken {
+contract SimpleToken is StandardToken, BurnableToken, Ownable {
 
   string public constant name = "Kubitcoin"; // solium-disable-line uppercase
   string public constant symbol = "KBX"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
-  address public BurnableAddress;
+  address public burnableAddress;
   uint256 public constant INITIAL_SUPPLY = 500000000 * (10 ** uint256(decimals));
 
   /**
@@ -30,7 +31,7 @@ contract SimpleToken is StandardToken, BurnableToken {
     burnableAddress = _burnableAddress;
   }
 
-  function burn(uint256 value) {
+  function burn(uint256 value) public {
     require(msg.sender == burnableAddress);
     super.burn(value);
   }
