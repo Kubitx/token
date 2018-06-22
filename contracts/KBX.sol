@@ -16,13 +16,10 @@ contract SimpleToken is StandardToken, BurnableToken, Whitelist {
   string public constant symbol = "KBX"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
   uint256 public constant INITIAL_SUPPLY = 500000000 * (10 ** uint256(decimals));
-
-
-
   address public releaseAgent;
 
   /** A crowdsale contract can release us to the wild if ICO success. If false we are are in transfer lock up period.*/
-  bool public released = true;
+  bool public released = false;
 
   /** Map of agents that are allowed to transfer tokens regardless of the lock down period. These are crowdsale contracts and possible the team multisig itself. */
   mapping (address => bool) public transferAgents;
