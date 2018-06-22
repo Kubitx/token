@@ -3,6 +3,8 @@ import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
+import "openzeppelin-solidity/contracts/ownership/HasNoEther.sol";
+import "openzeppelin-solidity/contracts/ownership/CanReclaimToken.sol";
 
 
 contract Whitelist is Pausable {
@@ -90,7 +92,7 @@ contract Whitelist is Pausable {
  * Note they can later distribute these tokens as they wish using `transfer` and other
  * `StandardToken` functions.
  */
-contract SimpleToken is StandardToken, BurnableToken, Whitelist {
+contract SimpleToken is StandardToken, BurnableToken, Whitelist, HasNoEther, CanReclaimToken {
 
   string public constant name = "KuBitcoin"; // solium-disable-line uppercase
   string public constant symbol = "KBX"; // solium-disable-line uppercase
