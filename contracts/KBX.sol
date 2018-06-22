@@ -141,7 +141,7 @@ contract SimpleToken is StandardToken, BurnableToken, Whitelist {
     super.decreaseApproval(_spender, _subtractedValue);
   }
 
-  function burn(uint256 value) public onlyWhitelisted {
+  function burn(uint256 value) public onlyWhitelisted whenNotPaused {
     super.burn(value);
   }
 
