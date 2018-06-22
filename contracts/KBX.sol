@@ -1,4 +1,4 @@
-pragma solidity 0.4.23;
+pragma solidity ^0.4.23;
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -24,7 +24,7 @@ contract Whitelist is Pausable {
   constructor() public {
     whitelist[msg.sender] = true;
     numberOfWhitelists = 1;
-    emit WhitelistedAddressAdded(addr);
+    emit WhitelistedAddressAdded(msg.sender);
   }
   /**
    * @dev add an address to the whitelist
