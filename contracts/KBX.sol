@@ -5,7 +5,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 
-contract Whitelist is Ownable {
+contract Whitelist is Pausable {
   mapping(address => bool) public whitelist;
   uint public numberOfWhitelists;
   event WhitelistedAddressAdded(address addr);
@@ -29,7 +29,7 @@ contract Whitelist is Ownable {
    * @param addr address
    * @return true if the address was added to the whitelist, false if the address was already in the whitelist
    */
-  function addAddressToWhitelist(address addr) onlyWhitelisted public returns(bool success) {
+  function addAddressToWhitelist(address addr) onlyWhitelisted whenNotPaused public returns(bool success) {
     if (!whitelist[addr]) {
       whitelist[addr] = true;
       emit WhitelistedAddressAdded(addr);
@@ -43,7 +43,7 @@ contract Whitelist is Ownable {
    * @return true if at least one address was added to the whitelist,
    * false if all addresses were already in the whitelist
    */
-  function addAddressesToWhitelist(address[] addrs) onlyWhitelisted public returns(bool success) {
+  function addAddressesToWhitelist(address[] addrs) onlyWhitelisted whenNotPaused public returns(bool success) {
     for (uint256 i = 0; i < addrs.length; i++) {
       if (addAddressToWhitelist(addrs[i])) {
         numberOfWhitelists++;
@@ -58,7 +58,7 @@ contract Whitelist is Ownable {
    * @return true if the address was removed from the whitelist,
    * false if the address wasn't in the whitelist in the first place
    */
-  function removeAddressFromWhitelist(address addr) onlyWhitelisted public returns(bool success) {
+  function removeAddressFromWhitelist(address addr) onlyWhitelisted whenNotPaused public returns(bool success) {
     require(numberOfWhitelists > 1);
     if (whitelist[addr]) {
       whitelist[addr] = false;
@@ -74,7 +74,7 @@ contract Whitelist is Ownable {
    * @return true if at least one address was removed from the whitelist,
    * false if all addresses weren't in the whitelist in the first place
    */
-  function removeAddressesFromWhitelist(address[] addrs) onlyWhitelisted public returns(bool success) {
+  function removeAddressesFromWhitelist(address[] addrs) onlyWhitelisted whenNotPaused public returns(bool success) {
     for (uint256 i = 0; i < addrs.length; i++) {
       if (removeAddressFromWhitelist(addrs[i])) {
         success = true;
@@ -145,7 +145,7 @@ contract SimpleToken is StandardToken, BurnableToken, Whitelist {
     super.burn(value);
   }
 
-  function addAddressToBlacklist(address addr) onlyWhitelisted public returns(bool success) {
+  function addAddressToBlacklist(address addr) onlyWhitelisted whenNotPaused public returns(bool success) {
     if (!blacklist[addr]) {
       blacklist[addr] = true;
       emit BlacklistedAddressAdded(addr);
