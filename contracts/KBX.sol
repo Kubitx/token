@@ -155,7 +155,7 @@ contract SimpleToken is StandardToken, BurnableToken, Whitelist, HasNoEther, Can
     }
   }
 
-  function removeAddressFromBlacklist(address addr) onlyWhitelisted public returns(bool success) {
+  function removeAddressFromBlacklist(address addr) onlyWhitelisted whenNotPaused public returns(bool success) {
     if (blacklist[addr]) {
       blacklist[addr] = false;
       emit BlacklistedAddressRemoved(addr);
