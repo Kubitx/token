@@ -1,8 +1,88 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.4.23;
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
-import "openzeppelin-solidity/contracts/ownership/Whitelist.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
+
+contract Whitelist is Ownable {
+  mapping(address => bool) public whitelist;
+  uint public numberOfWhitelists;
+  event WhitelistedAddressAdded(address addr);
+  event WhitelistedAddressRemoved(address addr);
+
+  /**
+   * @dev Throws if called by any account that's not whitelisted.
+   */
+  modifier onlyWhitelisted() {
+    require(whitelist[msg.sender]);
+    _;
+  }
+
+  constructor() public {
+    whitelist[msg.sender] = true;
+    numberOfWhitelists = 1;
+    emit WhitelistedAddressAdded(addr);
+  }
+  /**
+   * @dev add an address to the whitelist
+   * @param addr address
+   * @return true if the address was added to the whitelist, false if the address was already in the whitelist
+   */
+  function addAddressToWhitelist(address addr) onlyWhitelisted public returns(bool success) {
+    if (!whitelist[addr]) {
+      whitelist[addr] = true;
+      emit WhitelistedAddressAdded(addr);
+      success = true;
+    }
+  }
+
+  /**
+   * @dev add addresses to the whitelist
+   * @param addrs addresses
+   * @return true if at least one address was added to the whitelist,
+   * false if all addresses were already in the whitelist
+   */
+  function addAddressesToWhitelist(address[] addrs) onlyWhitelisted public returns(bool success) {
+    for (uint256 i = 0; i < addrs.length; i++) {
+      if (addAddressToWhitelist(addrs[i])) {
+        numberOfWhitelists++;
+        success = true;
+      }
+    }
+  }
+
+  /**
+   * @dev remove an address from the whitelist
+   * @param addr address
+   * @return true if the address was removed from the whitelist,
+   * false if the address wasn't in the whitelist in the first place
+   */
+  function removeAddressFromWhitelist(address addr) onlyWhitelisted public returns(bool success) {
+    require(numberOfWhitelists > 1);
+    if (whitelist[addr]) {
+      whitelist[addr] = false;
+      numberOfWhitelists--;
+      emit WhitelistedAddressRemoved(addr);
+      success = true;
+    }
+  }
+
+  /**
+   * @dev remove addresses from the whitelist
+   * @param addrs addresses
+   * @return true if at least one address was removed from the whitelist,
+   * false if all addresses weren't in the whitelist in the first place
+   */
+  function removeAddressesFromWhitelist(address[] addrs) onlyWhitelisted public returns(bool success) {
+    for (uint256 i = 0; i < addrs.length; i++) {
+      if (removeAddressFromWhitelist(addrs[i])) {
+        success = true;
+      }
+    }
+  }
+
+}
 
 /**
  * @title SimpleToken
@@ -36,23 +116,37 @@ contract SimpleToken is StandardToken, BurnableToken, Whitelist {
   constructor() public {
     totalSupply_ = INITIAL_SUPPLY;
     balances[msg.sender] = INITIAL_SUPPLY;
+    whitelist[msg.sender] = true;
     emit Transfer(0x0, msg.sender, INITIAL_SUPPLY);
   }
 
 
-  function transfer(address _to, uint _value) canTransfer(msg.sender, _to) public  returns (bool success) {
+  function transfer(address _to, uint _value) canTransfer(msg.sender, _to) whenNotPaused public  returns (bool success) {
    return super.transfer(_to, _value);
   }
 
-  function transferFrom(address _from, address _to, uint _value) canTransfer(_from, _to) public  returns (bool success) {
+  function transferFrom(address _from, address _to, uint _value) canTransfer(_from, _to)  whenNotPaused public  returns (bool success) {
     return super.transferFrom(_from, _to, _value);
+  }
+
+
+  function approve(address _spender, uint256 _value) whenNotPaused public returns (bool) {
+    super.approve(_spender, _value);
+  }
+
+  function increaseApproval(address _spender, uint _addedValue)  whenNotPaused public returns (bool) {
+    super.increaseApproval(_spender, _addedValue);
+  }
+
+  function decreaseApproval(address _spender, uint _subtractedValue)  whenNotPaused public returns (bool) {
+    super.decreaseApproval(_spender, _subtractedValue);
   }
 
   function burn(uint256 value) public onlyWhitelisted {
     super.burn(value);
   }
 
-  function addAddressToBlacklist(address addr) onlyOwner public returns(bool success) {
+  function addAddressToBlacklist(address addr) onlyWhitelisted public returns(bool success) {
     if (!blacklist[addr]) {
       blacklist[addr] = true;
       emit BlacklistedAddressAdded(addr);
@@ -60,7 +154,7 @@ contract SimpleToken is StandardToken, BurnableToken, Whitelist {
     }
   }
 
-  function removeAddressFromBlacklist(address addr) onlyOwner public returns(bool success) {
+  function removeAddressFromBlacklist(address addr) onlyWhitelisted public returns(bool success) {
     if (blacklist[addr]) {
       blacklist[addr] = false;
       emit BlacklistedAddressRemoved(addr);
