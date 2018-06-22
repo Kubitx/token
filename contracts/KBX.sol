@@ -116,7 +116,6 @@ contract SimpleToken is StandardToken, BurnableToken, Whitelist {
   constructor() public {
     totalSupply_ = INITIAL_SUPPLY;
     balances[msg.sender] = INITIAL_SUPPLY;
-    whitelist[msg.sender] = true;
     emit Transfer(0x0, msg.sender, INITIAL_SUPPLY);
   }
 
