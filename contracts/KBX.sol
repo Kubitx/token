@@ -34,23 +34,9 @@ contract Whitelist is Pausable {
   function addAddressToWhitelist(address addr) onlyWhitelisted whenNotPaused public returns(bool success) {
     if (!whitelist[addr]) {
       whitelist[addr] = true;
+      numberOfWhitelists++;
       emit WhitelistedAddressAdded(addr);
       success = true;
-    }
-  }
-
-  /**
-   * @dev add addresses to the whitelist
-   * @param addrs addresses
-   * @return true if at least one address was added to the whitelist,
-   * false if all addresses were already in the whitelist
-   */
-  function addAddressesToWhitelist(address[] addrs) onlyWhitelisted whenNotPaused public returns(bool success) {
-    for (uint256 i = 0; i < addrs.length; i++) {
-      if (addAddressToWhitelist(addrs[i])) {
-        numberOfWhitelists++;
-        success = true;
-      }
     }
   }
 
@@ -67,20 +53,6 @@ contract Whitelist is Pausable {
       numberOfWhitelists--;
       emit WhitelistedAddressRemoved(addr);
       success = true;
-    }
-  }
-
-  /**
-   * @dev remove addresses from the whitelist
-   * @param addrs addresses
-   * @return true if at least one address was removed from the whitelist,
-   * false if all addresses weren't in the whitelist in the first place
-   */
-  function removeAddressesFromWhitelist(address[] addrs) onlyWhitelisted whenNotPaused public returns(bool success) {
-    for (uint256 i = 0; i < addrs.length; i++) {
-      if (removeAddressFromWhitelist(addrs[i])) {
-        success = true;
-      }
     }
   }
 
