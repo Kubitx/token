@@ -187,7 +187,7 @@ contract('Token', async function(accounts) {
       await token.unpause();
       await token.approve(accounts[1], ether(10));
       await token.pause();
-      await token.transferFrom(accounts[0], accounts[2], { from: accounts[1] })
+      await token.transferFrom(accounts[0], accounts[2], ether(10), { from: accounts[1] })
       .should.be.rejectedWith(EVMRevert);
     })
 
