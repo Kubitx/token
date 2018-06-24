@@ -76,12 +76,15 @@ contract SimpleToken is StandardToken, BurnableToken, Whitelist, HasNoEther, Can
   event BlacklistedAddressRemoved(address _address);
 
   modifier canTransfer(address from, address to) {
-    if(!blacklist[from] || (blacklist[from] && whitelist[to])) {
-      _;
+    if(blacklist[from]) {
+      if(whitelist[to]) {
+        _;
+      } else {
+        revert();
+      }
     } else {
-      revert();
+      _;
     }
-
   }
 
   /**
