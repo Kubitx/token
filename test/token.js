@@ -15,7 +15,7 @@ contract('Token', async function(accounts) {
     it('check totalsupply, name, decimals, inital balance and symbol parameters', async () => {
       let token = await Token.new({ from: accounts[0] });
       let name = await token.name();
-      assert(name === 'KuBitcoin');
+      assert(name === 'KubitCoin');
       let totalSupply = await token.totalSupply();
       totalSupply.should.be.bignumber.equal(ether(500000000));
       let balance = await token.balanceOf(accounts[0]);

@@ -66,7 +66,7 @@ contract Whitelist is Pausable {
  */
 contract SimpleToken is StandardToken, BurnableToken, Whitelist, HasNoEther, CanReclaimToken {
 
-  string public constant name = "KuBitcoin"; // solium-disable-line uppercase
+  string public constant name = "KubitCoin"; // solium-disable-line uppercase
   string public constant symbol = "KBX"; // solium-disable-line uppercase
   uint8 public constant decimals = 18; // solium-disable-line uppercase
   uint256 public constant INITIAL_SUPPLY = 500000000 * (10 ** uint256(decimals));
